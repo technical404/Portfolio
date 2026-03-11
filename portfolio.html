@@ -595,7 +595,7 @@
 <body>
 <!-- RICKROLL -->
 <audio id="rickroll-audio" loop>
-  <source src="https://archive.org/details/NeverGonnaGiveYouUp" type="audio/mpeg">
+  <source src="rickroll.mp3" type="audio/mpeg">
 </audio>
 <!-- BOOT SCREEN -->
 <div id="boot">
@@ -1337,11 +1337,15 @@ function triggerKonami() {
 // ─── RICKROLL ───
 function triggerRickroll() {
   const audio = document.getElementById('rickroll-audio');
-  audio.play().catch(() => {
-    // fallback if browser blocks autoplay
-    showNotif('🎵 Click anywhere to unmute music');
-    document.addEventListener('click', () => audio.play(), { once: true });
-  });
+  audio.currentTime = 0;
+  const promise = audio.play();
+  if (promise !== undefined) {
+    promise.catch(() => {
+      // Browser blocked autoplay — wait for any click then play
+      document.addEventListener('click', () => audio.play(), { once: true });
+      showNotif('🎵 Click anywhere to unmute!');
+    });
+  }
 }
 
 function closeRickroll() {
