@@ -579,14 +579,17 @@
   .resize-handle {
     position:absolute;
     right:0;bottom:0;
-    width:16px;height:16px;
+    width:22px;height:22px;
     cursor:se-resize;
-    opacity:0.3;
-    font-size:0.7rem;
+    opacity:0.4;
+    font-size:0.85rem;
     display:flex;align-items:flex-end;justify-content:flex-end;
-    padding:2px;
+    padding:3px;
     color:var(--accent);
+    transition:opacity 0.2s;
+    z-index:10;
   }
+  .resize-handle:hover { opacity:1; }
 
   .tag-cyan { border-color:rgba(0,207,255,0.3)!important; color:var(--accent2)!important; background:rgba(0,207,255,0.08)!important; }
   .tag-red { border-color:rgba(255,62,108,0.3)!important; color:var(--accent3)!important; background:rgba(255,62,108,0.08)!important; }
@@ -1062,6 +1065,31 @@ document.querySelectorAll('.win-titlebar').forEach(tb => {
     win.style.top  = (e.clientY - oy) + 'px';
   });
   document.addEventListener('mouseup', () => isDrag=false);
+});
+  // ─── RESIZE ───
+document.querySelectorAll('.resize-handle').forEach(handle => {
+  const win = handle.parentElement;
+  let isResizing = false, startX, startY, startW, startH;
+
+  handle.addEventListener('mousedown', e => {
+    isResizing = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startW = win.offsetWidth;
+    startH = win.offsetHeight;
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!isResizing) return;
+    const newW = Math.max(320, startW + (e.clientX - startX));
+    const newH = Math.max(200, startH + (e.clientY - startY));
+    win.style.width  = newW + 'px';
+    win.style.height = newH + 'px';
+  });
+
+  document.addEventListener('mouseup', () => { isResizing = false; });
 });
 
 // ─── NOTIFICATION ───
